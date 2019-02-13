@@ -20,7 +20,7 @@ class CustomerController extends Controller
         //$customers = Customer::where('id', '10')->get();
 
         //PARA HACER BBUSQUEDAS CON PAGINADO
-        $customers = Customer::where('name','like','%'.$request->name.'%')->paginate(15);
+        $customers = Customer::where('name','like','%'.$request->found.'%')->paginate(15);
         //dd($customers);
         return view('customers.index', compact('customers'));
     }
@@ -50,6 +50,11 @@ class CustomerController extends Controller
             'name'=>$request->name
         ]);*/
         /*Aqui toma todo el arreglo */
+        /*$request->validate([
+            'name' => 'required',
+            
+        ]);*/
+        $this->validador($request);
         Customer::create($request -> input());
         flash('Se guardo el registro correctamente')->success();
         return redirect('customers');
@@ -74,7 +79,7 @@ class CustomerController extends Controller
      */
     public function edit(Customer $customer)
     {
-        //
+       return view('customers.edit', compact('customer'));
     }
 
     /**
@@ -86,7 +91,11 @@ class CustomerController extends Controller
      */
     public function update(Request $request, Customer $customer)
     {
-        //
+        //dd('hola');
+        $this->validador($request);
+        $customer->update(['name'=> $request->name]);
+         flash('Se actualizo el registro correctamente')->success();
+        return redirect('customers');
     }
 
     /**
@@ -97,6 +106,15 @@ class CustomerController extends Controller
      */
     public function destroy(Customer $customer)
     {
-        //
+        $customer->delete();
+        flash('Se elimino el registro correctamente')->success();
+        return redirect('customers');
+    }
+    public function validador($request)
+    {   $request->validate([
+            'name' => 'required',
+            
+        ]);
+
     }
 }
